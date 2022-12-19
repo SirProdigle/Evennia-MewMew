@@ -11,8 +11,10 @@ Rather, each script tends to inherit from the base Script class and
 just overloads its hooks to have it perform its function.
 
 """
+import random
 
 from evennia.scripts.scripts import DefaultScript
+from evennia.utils.create import create_script
 
 
 class Script(DefaultScript):
@@ -90,3 +92,48 @@ class Script(DefaultScript):
     """
 
     pass
+class WeatherScript(Script):
+
+    possibleWeather = [
+        "Rain gently patters the floor",
+        "Rain pelts the floor with agressive force",
+        "The skies are clear with soft flickers of sunlight",
+        "The skies roar with thunder",
+        "Flashes of lightning in the sky fill your vision",
+        "Delicate snowflakes gently begin to fall ont othe ground",
+        "The ground is covered with a thick layer of snow while the sky is covered with a pure white sheet",
+        "The air around you fogs up, you can barely see 5 metres in front of you",
+    ]
+    possibleTime = [
+        "It is Sunrise. The sky slowly fades from it's pitch black aura to flickers of dim golden sunlight",
+        "It is early morning",
+        "It is Midday",
+        "It is Evening",
+        "It is Sundown. The sky is enveloped by an orange to black mist as the sun disappears from view",
+        "It is Night. While the sun has long set, the city still pulses with activity and noise"
+    ]
+
+    def at_script_creation(self):
+        self.key = "weather"
+        self.description = "Handles weather and day/night cycle"
+        self.interval = 300 # 5 mins
+        self.repeats = 0
+        self.persistent = True
+        # Get a random weather
+        self.db.currentWeather = random.choice(self.possibleWeather)
+        # Get a random time
+        self.db.currentTime = random.choice(self.possibleTime)
+
+    def at_repeat(self, **kwargs):
+        self.db.currentWeather = random.choice(self.possibleWeather)
+        # Forward time by 1 index
+        self.db.currentTime = self.possibleTime[(self.possibleTime.index(self.db.currentTime) + 1) % len(self.possibleTime)]
+
+    def get_time(self):
+        return self.db.currentTime
+
+    def get_weather(self):
+        return self.db.currentWeather
+
+create_script("typeclasses.scripts.WeatherScript",
+                    key="weather", persistent=True, obj=None)
