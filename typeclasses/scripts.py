@@ -137,7 +137,7 @@ class WeatherScript(Script):
             (self.possibleTime.index(self.db.currentTime) + 1) % len(self.possibleTime)]
 
     def get_time(self):
-        return self.db.currentTime
+        return self.db.currentTime["desc"]
 
     def get_weather(self):
-        return self.db.currentWeather
+        return self.db.currentWeather["desc"]
