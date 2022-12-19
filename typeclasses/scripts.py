@@ -92,31 +92,37 @@ class Script(DefaultScript):
     """
 
     pass
-class WeatherScript(Script):
 
+
+class WeatherScript(Script):
+    """
+    Handles city-wide setting of weather and time with associated getters
+    """
     possibleWeather = [
-        "Rain gently patters the floor",
-        "Rain pelts the floor with agressive force",
-        "The skies are clear with soft flickers of sunlight",
-        "The skies roar with thunder",
-        "Flashes of lightning in the sky fill your vision",
-        "Delicate snowflakes gently begin to fall ont othe ground",
-        "The ground is covered with a thick layer of snow while the sky is covered with a pure white sheet",
-        "The air around you fogs up, you can barely see 5 metres in front of you",
+        {"desc": "|015Rain gently patters the floor", "tag": "rain"},
+        {"desc": "|015Rain pelts the floor with aggressive force", "tag": "rain"},
+        {"desc": "|025The skies are clear", "tag": "normal"},
+        {"desc": "|025Beautiful fluffy clouds pass overhead", "tag": "normal"},
+        {"desc": "|440The skies roar with thunder", "tag": "thunder"},
+        {"desc": "|440Flashes of lightning in the sky fill your vision", "tag": "thunder"},
+        {"desc": "|255Delicate snowflakes gently begin to fall on to the ground", "tag": "snow"},
+        {"desc": "|255The ground is covered with a thick layer of snow while the sky is covered with a pure white sheet", "tag": "snow"},
+        {"desc": "|102The air around you fogs up, you can barely see 5 metres in front of you", "tag": "fog"},
     ]
     possibleTime = [
-        "It is Sunrise. The sky slowly fades from it's pitch black aura to flickers of dim golden sunlight",
-        "It is early morning",
-        "It is Midday",
-        "It is Evening",
-        "It is Sundown. The sky is enveloped by an orange to black mist as the sun disappears from view",
-        "It is Night. While the sun has long set, the city still pulses with activity and noise"
+        {"desc": "|430It is Sunrise. The sky slowly fades from it's pitch black aura to flickers of dim golden sunlight", "tag": "day"},
+        {"desc": "|330It is Morning", "tag": "day"},
+        {"desc": "|440It is Midday", "tag": "day"},
+        {"desc": "|530It is Evening", "tag": "day"},
+        {"desc": "|310It is Sundown. The sky is enveloped by an orange to black mist as the sun disappears from view", "tag": "night"},
+        {"desc": "|003It is Night. While the sun has long set, the city still pulses with activity and noise", "tag": "night"},
+        {"desc": "|003It is Night. While the sun has long set, the city still pulses with activity and noise", "tag": "night"}
     ]
 
     def at_script_creation(self):
         self.key = "weather"
         self.description = "Handles weather and day/night cycle"
-        self.interval = 300 # 5 mins
+        self.interval = 10  # 5 mins
         self.repeats = 0
         self.persistent = True
         # Get a random weather
@@ -127,13 +133,11 @@ class WeatherScript(Script):
     def at_repeat(self, **kwargs):
         self.db.currentWeather = random.choice(self.possibleWeather)
         # Forward time by 1 index
-        self.db.currentTime = self.possibleTime[(self.possibleTime.index(self.db.currentTime) + 1) % len(self.possibleTime)]
+        self.db.currentTime = self.possibleTime[
+            (self.possibleTime.index(self.db.currentTime) + 1) % len(self.possibleTime)]
 
     def get_time(self):
         return self.db.currentTime
 
     def get_weather(self):
         return self.db.currentWeather
-
-create_script("typeclasses.scripts.WeatherScript",
-                    key="weather", persistent=True, obj=None)

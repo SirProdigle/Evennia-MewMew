@@ -33,11 +33,20 @@ class Room(ObjectParent, DefaultRoom):
         super().at_object_creation()
         self.db.outdoors = True
 
-    def return_appearance(self, looker, **kwargs):
-        return \
-            GLOBAL_SCRIPTS.weather.get_time() + \
-            GLOBAL_SCRIPTS.weather.get_weather() + \
-            + super().return_appearance(looker, **kwargs)
+    def get_display_desc(self, looker, **kwargs):
+        """
+                Get the 'desc' component of the object description. Called by `return_appearance`.
+
+                Args:
+                    looker (Object): Object doing the looking.
+                    **kwargs: Arbitrary data for use when overriding.
+                Returns:
+                    str: The desc display string..
+
+                """
+        return self.db.desc + "\n" + GLOBAL_SCRIPTS.weather.get_time() + ". " + GLOBAL_SCRIPTS.weather.get_weather() \
+               + "|n" if self.db.desc \
+            else "You see nothing special.\n" + GLOBAL_SCRIPTS.weather.get_time() + ". " + GLOBAL_SCRIPTS.weather.get_weather() + "|n"
 
     def get_display_exits(self, looker, **kwargs):
         """

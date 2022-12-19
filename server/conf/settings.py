@@ -35,6 +35,13 @@ from evennia.settings_default import *
 SERVERNAME = "MagicMewd"
 
 
+GLOBAL_SCRIPTS = {
+    "weather": {
+        "typeclass": "typeclasses.scripts.WeatherScript"
+    }
+}
+
+
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
 ######################################################################
